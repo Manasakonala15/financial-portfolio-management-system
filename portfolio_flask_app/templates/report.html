@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row g-4 mt-1">
+    <div class="col-md-6 col-xl-3">
+        <div class="metric-card compact-card">
+            <div class="metric-label">Total Investment</div>
+            <div class="metric-value">{{ summary.total_investment|money if summary else '₹0.00' }}</div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="metric-card compact-card">
+            <div class="metric-label">Current Value</div>
+            <div class="metric-value">{{ summary.current_value|money if summary else '₹0.00' }}</div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="metric-card compact-card">
+            <div class="metric-label">Total Profit</div>
+            <div class="metric-value">{{ summary.total_profit|money if summary else '₹0.00' }}</div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="metric-card compact-card">
+            <div class="metric-label">Return Percentage</div>
+            <div class="metric-value">{{ summary.return_percentage if summary and summary.return_percentage is not none else 0 }}%</div>
+        </div>
+    </div>
+</div>
+
+<div class="panel-card mt-4">
+    <div class="section-header">
+        <h5>Detailed Performance Report</h5>
+        <a href="{{ url_for('download_report') }}" class="btn btn-success btn-soft btn-sm">
+            <i class="bi bi-download"></i> Download CSV
+        </a>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle table-theme mb-0">
+            <thead>
+                <tr>
+                    <th>Asset</th>
+                    <th>Category</th>
+                    <th>Risk</th>
+                    <th>Investment</th>
+                    <th>Current Value</th>
+                    <th>Profit</th>
+                    <th>Return %</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in performance %}
+                <tr>
+                    <td>{{ row.asset_name }}</td>
+                    <td>{{ row.category_name }}</td>
+                    <td>{{ row.risk_level }}</td>
+                    <td>{{ row.investment|money }}</td>
+                    <td>{{ row.current_value|money }}</td>
+                    <td>{{ row.profit|money }}</td>
+                    <td>{{ row.return_percent }}%</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7" class="text-center py-4">No report data available.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

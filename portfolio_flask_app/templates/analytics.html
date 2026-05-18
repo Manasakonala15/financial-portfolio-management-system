@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="panel-card h-100">
+            <div class="section-header">
+                <div>
+                    <h5>Investment Trend</h5>
+                    <div class="section-caption">Transaction value growth across time</div>
+                </div>
+            </div>
+            <div class="chart-wrap chart-wrap-lg">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="panel-card h-100">
+            <div class="section-header">
+                <div>
+                    <h5>Risk Distribution</h5>
+                    <div class="section-caption">Holdings count by risk level</div>
+                </div>
+            </div>
+            <div class="chart-wrap chart-wrap-lg">
+                <canvas id="riskChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel-card">
+    <div class="section-header">
+        <div>
+            <h5>Asset Performance</h5>
+            <div class="section-caption">Current value and returns for each asset</div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle table-theme mb-0">
+            <thead>
+                <tr>
+                    <th>Asset</th>
+                    <th>Current Value</th>
+                    <th>Profit</th>
+                    <th>Return %</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in asset_performance %}
+                <tr>
+                    <td class="fw-semibold">{{ row.asset_name }}</td>
+                    <td>{{ row.current_value|money }}</td>
+                    <td>{{ row.profit|money }}</td>
+                    <td>{{ row.return_percent }}%</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4" class="text-center py-4">No analytics data available.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+const trendLabels = {{ trend_labels | tojson }};
+const trendValues = {{ trend_values | tojson }};
+const riskLabels = {{ risk_labels | tojson }};
+const riskValues = {{ risk_values | tojson }};
+
+const trendCanvas = document.getElementById('trendChart');
+if (trendCanvas && trendLabels.length) {
+    new Chart(trendCanvas, {
+        type: 'line',
+        data: {
+            labels: trendLabels,
+            datasets: [{
+                label: 'Investment Trend',
+                data: trendValues,
+                borderColor: '#2563eb',
+                backgroundColor: 'rgba(37,99,235,0.12)',
+                borderWidth: 3,
+                pointRadius: 4,
+                pointBackgroundColor: '#2563eb',
+                fill: true,
+                tension: 0.35
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(148,163,184,0.18)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+}
+
+const riskCanvas = document.getElementById('riskChart');
+if (riskCanvas && riskLabels.length) {
+    new Chart(riskCanvas, {
+        type: 'doughnut',
+        data: {
+            labels: riskLabels,
+            datasets: [{
+                data: riskValues,
+                backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            },
+            cutout: '64%'
+        }
+    });
+}
+</script>
+{% endblock %}

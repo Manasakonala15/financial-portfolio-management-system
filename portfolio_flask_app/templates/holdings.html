@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row g-4 mt-1">
+    <div class="col-lg-8">
+        <div class="panel-card">
+            <div class="section-header">
+                <h5>Portfolio Holdings</h5>
+                <span class="section-meta">Manage owned assets</span>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle table-theme mb-0">
+                    <thead>
+                        <tr>
+                            <th>Asset</th>
+                            <th>Category</th>
+                            <th>Risk</th>
+                            <th>Qty</th>
+                            <th>Buy Price</th>
+                            <th>Current Price</th>
+                            <th>Current Value</th>
+                            <th>Profit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in holdings %}
+                        <tr>
+                            <td>{{ row.asset_name }}</td>
+                            <td>{{ row.category_name }}</td>
+                            <td><span class="badge-soft">{{ row.risk_level }}</span></td>
+                            <td>{{ row.quantity }}</td>
+                            <td>{{ row.buy_price|money }}</td>
+                            <td>{{ row.current_price|money }}</td>
+                            <td>{{ row.current_value|money }}</td>
+                            <td>{{ row.profit|money }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="8" class="text-center py-4">No holdings available.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="panel-card mb-4">
+            <div class="section-header">
+                <h5>Add Holding</h5>
+            </div>
+            <form method="post" action="{{ url_for('add_holding') }}">
+                <div class="mb-3">
+                    <label class="form-label">Asset</label>
+                    <select name="asset_id" class="form-select" required>
+                        <option value="">Select Asset</option>
+                        {% for asset in assets %}
+                            <option value="{{ asset.asset_id }}">{{ asset.asset_name }} - {{ asset.category_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Quantity</label>
+                    <input type="number" name="quantity" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Buy Price</label>
+                    <input type="number" step="0.01" name="buy_price" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Buy Date</label>
+                    <input type="date" name="buy_date" class="form-control" required>
+                </div>
+                <button class="btn btn-primary w-100 btn-soft">Save Holding</button>
+            </form>
+        </div>
+
+        <div class="panel-card">
+            <div class="section-header">
+                <h5>Update Price</h5>
+            </div>
+            <form method="post" action="{{ url_for('add_price') }}">
+                <div class="mb-3">
+                    <label class="form-label">Asset</label>
+                    <select name="asset_id" class="form-select" required>
+                        <option value="">Select Asset</option>
+                        {% for asset in assets %}
+                            <option value="{{ asset.asset_id }}">{{ asset.asset_name }} - {{ asset.category_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Latest Price</label>
+                    <input type="number" step="0.01" name="price" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Price Date</label>
+                    <input type="date" name="price_date" class="form-control" required>
+                </div>
+                <button class="btn btn-success w-100 btn-soft">Add Price Record</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

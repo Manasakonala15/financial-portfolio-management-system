@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="panel-card mt-1">
+    <div class="section-header">
+        <h5>Transaction History</h5>
+        <span class="section-meta">All buy and sell records</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped align-middle table-theme mb-0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Asset</th>
+                    <th>Type</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Trade Value</th>
+                    <th>Broker</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in transactions %}
+                <tr>
+                    <td>{{ row.transaction_id }}</td>
+                    <td>{{ row.asset_name }}</td>
+                    <td>{{ row.transaction_type }}</td>
+                    <td>{{ row.quantity }}</td>
+                    <td>{{ row.price|money }}</td>
+                    <td>{{ row.trade_value|money }}</td>
+                    <td>{{ row.broker_name }}</td>
+                    <td>{{ row.transaction_date }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="8" class="text-center py-4">No transactions available.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

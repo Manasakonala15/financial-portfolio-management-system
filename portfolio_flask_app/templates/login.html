@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block auth_content %}
+<div class="row justify-content-center align-items-center min-vh-100">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm p-4">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold mb-1">Welcome Back</h2>
+                <p class="text-muted mb-0">Sign in to access your financial portfolio dashboard.</p>
+            </div>
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email" required>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 btn-soft">Login</button>
+            </form>
+            <p class="text-center mt-3 mb-0">New user? <a href="{{ url_for('register') }}">Create an account</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

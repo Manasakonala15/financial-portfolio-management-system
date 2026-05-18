@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="hero-card mb-4">
+    <div>
+        <div class="eyebrow">Portfolio overview</div>
+        <h2 class="hero-title">Welcome back, {{ session['user_name'] }}</h2>
+        <p class="hero-text mb-0">Review your portfolio performance, latest transactions and allocation from one focused dashboard.</p>
+    </div>
+    <div class="hero-badge">
+        <i class="bi bi-shield-check"></i>
+        <span>Portfolio synced</span>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-xl-3">
+        <div class="metric-card compact-card">
+            <div class="metric-icon"><i class="bi bi-cash-stack"></i></div>
+            <div class="metric-label">Total Investment</div>
+            <div class="metric-value">{{ summary.total_investment|money if summary else '₹0.00' }}</div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="metric-card compact-card">
+            <div class="metric-icon"><i class="bi bi-graph-up-arrow"></i></div>
+            <div class="metric-label">Current Value</div>
+            <div class="metric-value">{{ summary.current_value|money if summary else '₹0.00' }}</div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="metric-card compact-card">
+            <div class="metric-icon"><i class="bi bi-piggy-bank"></i></div>
+            <div class="metric-label">Total Profit</div>
+            <div class="metric-value">{{ summary.total_profit|money if summary else '₹0.00' }}</div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="metric-card compact-card">
+            <div class="metric-icon"><i class="bi bi-percent"></i></div>
+            <div class="metric-label">Return %</div>
+            <div class="metric-value">{{ summary.return_percentage if summary and summary.return_percentage is not none else 0 }}%</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-xl-8">
+        <div class="panel-card h-100">
+            <div class="section-header">
+                <div>
+                    <h5>Top Holdings</h5>
+                    <div class="section-caption">Highest current value positions in your portfolio</div>
+                </div>
+                <a href="{{ url_for('holdings') }}" class="section-link">View all</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle table-theme mb-0">
+                    <thead>
+                        <tr>
+                            <th>Asset</th>
+                            <th>Category</th>
+                            <th>Risk</th>
+                            <th>Current Value</th>
+                            <th>Profit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in holdings %}
+                        <tr>
+                            <td class="fw-semibold">{{ row.asset_name }}</td>
+                            <td>{{ row.category_name }}</td>
+                            <td><span class="badge-soft">{{ row.risk_level }}</span></td>
+                            <td>{{ row.current_value|money }}</td>
+                            <td>{{ row.profit|money }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="5" class="text-center py-4">No holdings found.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4">
+        <div class="panel-card h-100">
+            <div class="section-header">
+                <div>
+                    <h5>Allocation Mix</h5>
+                    <div class="section-caption">Value split by category</div>
+                </div>
+                <a href="{{ url_for('analytics') }}" class="section-link">Analytics</a>
+            </div>
+            <div class="chart-wrap chart-wrap-sm">
+                <canvas id="allocationChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-1">
+    <div class="col-lg-8">
+        <div class="panel-card">
+            <div class="section-header">
+                <div>
+                    <h5>Recent Transactions</h5>
+                    <div class="section-caption">Most recent portfolio activity</div>
+                </div>
+                <a href="{{ url_for('transactions') }}" class="section-link">View all</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped align-middle table-theme mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Asset</th>
+                            <th>Type</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in recent_transactions %}
+                        <tr>
+                            <td>{{ row.transaction_id }}</td>
+                            <td class="fw-semibold">{{ row.asset_name }}</td>
+                            <td><span class="badge-soft">{{ row.transaction_type }}</span></td>
+                            <td>{{ row.quantity }}</td>
+                            <td>{{ row.price|money }}</td>
+                            <td>{{ row.transaction_date }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="6" class="text-center py-4">No transactions found.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="panel-card h-100">
+            <div class="section-header">
+                <div>
+                    <h5>Quick Insights</h5>
+                    <div class="section-caption">Fast snapshot of portfolio health</div>
+                </div>
+            </div>
+            <div class="insight-list">
+                <div class="insight-item">
+                    <span class="insight-label">Tracked holdings</span>
+                    <span class="insight-value">{{ holdings|length }}</span>
+                </div>
+                <div class="insight-item">
+                    <span class="insight-label">Recent transactions</span>
+                    <span class="insight-value">{{ recent_transactions|length }}</span>
+                </div>
+                <div class="insight-item">
+                    <span class="insight-label">Allocation categories</span>
+                    <span class="insight-value">{{ allocation|length }}</span>
+                </div>
+                <div class="insight-item">
+                    <span class="insight-label">Portfolio status</span>
+                    <span class="insight-value positive">Active</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const allocationLabels = {{ allocation | map(attribute='category_name') | list | tojson }};
+const allocationValues = {{ allocation | map(attribute='total_value') | list | tojson }};
+
+const allocationCanvas = document.getElementById('allocationChart');
+if (allocationCanvas && allocationLabels.length) {
+    new Chart(allocationCanvas, {
+        type: 'doughnut',
+        data: {
+            labels: allocationLabels,
+            datasets: [{
+                data: allocationValues,
+                backgroundColor: ['#2563eb', '#7c3aed', '#14b8a6', '#f59e0b', '#ef4444'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            },
+            cutout: '68%'
+        }
+    });
+}
+</script>
+{% endblock %}
